@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .status-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .status-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-dot.online {
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .panel {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .patient-list {
+            margin-top: 30px;
+        }
+
+        .patient-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .patient-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .patient-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .patient-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            color: #666;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-icon {
+            font-size: 1.2em;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+            display: block;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Healthcare Management System</h1>
+            <p>आसानी से Patients, Appointments और Medical Records manage करें</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-label">System Status</div>
+                <div class="status-value">
+                    <span class="status-dot online"></span>
+                    <span id="systemStatus">Online</span>
+                </div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Total Patients</div>
+                <div class="status-value" id="totalPatients">0</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Appointments Today</div>
+                <div class="status-value" id="totalAppointments">0</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('patients')">👥 Patients</button>
+            <button class="tab" onclick="switchTab('appointments')">📅 Appointments</button>
+            <button class="tab" onclick="switchTab('records')">📋 Medical Records</button>
+        </div>
+
+        <!-- Patients Panel -->
+        <div id="patients" class="panel active">
+            <h2>➕ नया Patient Add करें</h2>
+            <div id="patientMessage" class="message"></div>
+            
+            <form id="patientForm">
+                <div class="form-group">
+                    <label>नाम (Name) *</label>
+                    <input type="text" id="patientName" required placeholder="मरीज का नाम दर्ज करें">
+                </div>
+                
+                <div class="form-group">
+                    <label>जन्म तिथि (Date of Birth) *</label>
+                    <input type="date" id="patientDOB" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="patientEmail" required placeholder="example@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>फोन नंबर (Phone)</label>
+                    <input type="tel" id="patientPhone" placeholder="9876543210">
+                </div>
+                
+                <div class="form-group">
+                    <label>पता (Address)</label>
+                    <textarea id="patientAddress" rows="3" placeholder="पूरा पता दर्ज करें"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Blood Group</label>
+                    <select id="patientBloodGroup">
+                        <option value="">Select...</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn">Patient Add करें</button>
+            </form>
+
+            <div class="patient-list">
+                <h2>📋 सभी Patients</h2>
+                <div id="patientsList"></div>
+            </div>
+        </div>
+
+        <!-- Appointments Panel -->
+        <div id="appointments" class="panel">
+            <h2>📅 नई Appointment Book करें</h2>
+            <div id="appointmentMessage" class="message"></div>
+            
+            <form id="appointmentForm">
+                <div class="form-group">
+                    <label>Patient चुनें *</label>
+                    <select id="appointmentPatient" required>
+                        <option value="">Patient चुनें...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Doctor का नाम *</label>
+                    <input type="text" id="appointmentDoctor" required placeholder="Dr. Sharma">
+                </div>
+                
+                <div class="form-group">
+                    <label>Appointment Date & Time *</label>
+                    <input type="datetime-local" id="appointmentDateTime" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Reason</label>
+                    <textarea id="appointmentReason" rows="3" placeholder="Appointment की वजह बताएं"></textarea>
+                </div>
+                
+                <button type="submit" class="btn">Appointment Book करें</button>
+            </form>
+
+            <div class="patient-list">
+                <h2>📅 सभी Appointments</h2>
+                <div id="appointmentsList"></div>
+            </div>
+        </div>
+
+        <!-- Medical Records Panel -->
+        <div id="records" class="panel">
+            <h2>📋 नया Medical Record Add करें</h2>
+            <div id="recordMessage" class="message"></div>
+            
+            <form id="recordForm">
+                <div class="form-group">
+                    <label>Patient चुनें *</label>
+                    <select id="recordPatient" required>
+                        <option value="">Patient चुनें...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Diagnosis (निदान) *</label>
+                    <textarea id="recordDiagnosis" rows="3" required placeholder="रोग का निदान"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Prescription (दवा)</label>
+                    <textarea id="recordPrescription" rows="3" placeholder="दवाओं का विवरण"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Doctor का नाम *</label>
+                    <input type="text" id="recordDoctor" required placeholder="Dr. Sharma">
+                </div>
+                
+                <div class="form-group">
+                    <label>Record Date</label>
+                    <input type="date" id="recordDate">
+                </div>
+                
+                <button type="submit" class="btn">Record Add करें</button>
+            </form>
+
+            <div class="patient-list">
+                <h2>📋 सभी Medical Records</h2>
+                <div id="recordsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            if (tabName === 'patients') loadPatients();
+            if (tabName === 'appointments') {
+                loadAppointments();
+                loadPatientsDropdown();
+            }
+            if (tabName === 'records') {
+                loadRecords();
+                loadPatientsDropdown();
+            }
+        }
+
+        // Check system health
+        async function checkHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                document.getElementById('systemStatus').textContent = data.status === 'healthy' ? 'Online' : 'Offline';
+            } catch (error) {
+                document.getElementById('systemStatus').textContent = 'Offline';
+            }
+        }
+
+        // Load patients
+        async function loadPatients() {
+            const container = document.getElementById('patientsList');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/patients`);
+                const data = await response.json();
+                
+                document.getElementById('totalPatients').textContent = data.count;
+                
+                if (data.count === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🏥</div>
+                            <p>अभी तक कोई patient नहीं है। ऊपर form से पहला patient add करें!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = data.data.map(patient => `
+                    <div class="patient-card">
+                        <div class="patient-name">👤 ${patient.name}</div>
+                        <div class="patient-info">
+                            <div class="info-item">
+                                <span class="info-icon">🎂</span>
+                                <span>${patient.date_of_birth}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-icon">📧</span>
+                                <span>${patient.email}</span>
+                            </div>
+                            ${patient.phone ? `
+                            <div class="info-item">
+                                <span class="info-icon">📱</span>
+                                <span>${patient.phone}</span>
+                            </div>
+                            ` : ''}
+                            ${patient.blood_group ? `
+                            <div class="info-item">
+                                <span class="info-icon">🩸</span>
+                                <span>${patient.blood_group}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `<div class="message error">Error loading patients: ${error.message}</div>`;
+            }
+        }
+
+        // Load patients for dropdown
+        async function loadPatientsDropdown() {
+            try {
+                const response = await fetch(`${API_BASE}/api/patients`);
+                const data = await response.json();
+                
+                const options = data.data.map(p => 
+                    `<option value="${p.id}">${p.name} (${p.email})</option>`
+                ).join('');
+                
+                document.getElementById('appointmentPatient').innerHTML = 
+                    '<option value="">Patient चुनें...</option>' + options;
+                document.getElementById('recordPatient').innerHTML = 
+                    '<option value="">Patient चुनें...</option>' + options;
+            } catch (error) {
+                console.error('Error loading patients dropdown:', error);
+            }
+        }
+
+        // Load appointments
+        async function loadAppointments() {
+            const container = document.getElementById('appointmentsList');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/appointments`);
+                const data = await response.json();
+                
+                document.getElementById('totalAppointments').textContent = data.count;
+                
+                if (data.count === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📅</div>
+                            <p>कोई appointment नहीं है। ऊपर form से appointment book करें!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = data.data.map(apt => `
+                    <div class="patient-card">
+                        <div class="patient-name">📅 Appointment #${apt.id}</div>
+                        <div class="patient-info">
+                            <div class="info-item">
+                                <span class="info-icon">👨‍⚕️</span>
+                                <span>${apt.doctor_name}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-icon">🕐</span>
+                                <span>${new Date(apt.appointment_datetime).toLocaleString('hi-IN')}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-icon">📊</span>
+                                <span>${apt.status}</span>
+                            </div>
+                            ${apt.reason ? `
+                            <div class="info-item" style="grid-column: 1/-1;">
+                                <span class="info-icon">📝</span>
+                                <span>${apt.reason}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `<div class="message error">Error loading appointments: ${error.message}</div>`;
+            }
+        }
+
+        // Load medical records
+        async function loadRecords() {
+            const container = document.getElementById('recordsList');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading...</p></div>';
+            
+            try {
+                const patientsRes = await fetch(`${API_BASE}/api/patients`);
+                const patientsData = await patientsRes.json();
+                
+                let allRecords = [];
+                for (const patient of patientsData.data) {
+                    const recordsRes = await fetch(`${API_BASE}/api/patients/${patient.id}/records`);
+                    const recordsData = await recordsRes.json();
+                    allRecords = allRecords.concat(recordsData.data.map(r => ({...r, patientName: patient.name})));
+                }
+                
+                if (allRecords.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <p>कोई medical record नहीं है। ऊपर form से record add करें!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = allRecords.map(record => `
+                    <div class="patient-card">
+                        <div class="patient-name">📋 ${record.patientName} - Medical Record</div>
+                        <div class="patient-info">
+                            <div class="info-item">
+                                <span class="info-icon">👨‍⚕️</span>
+                                <span>${record.doctor_name}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-icon">📅</span>
+                                <span>${record.record_date}</span>
+                            </div>
+                            <div class="info-item" style="grid-column: 1/-1;">
+                                <span class="info-icon">🔍</span>
+                                <span><strong>Diagnosis:</strong> ${record.diagnosis}</span>
+                            </div>
+                            ${record.prescription ? `
+                            <div class="info-item" style="grid-column: 1/-1;">
+                                <span class="info-icon">💊</span>
+                                <span><strong>Prescription:</strong> ${record.prescription}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `<div class="message error">Error loading records: ${error.message}</div>`;
+            }
+        }
+
+        // Form submissions
+        document.getElementById('patientForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageDiv = document.getElementById('patientMessage');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/patients`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        name: document.getElementById('patientName').value,
+                        date_of_birth: document.getElementById('patientDOB').value,
+                        email: document.getElementById('patientEmail').value,
+                        phone: document.getElementById('patientPhone').value,
+                        address: document.getElementById('patientAddress').value,
+                        blood_group: document.getElementById('patientBloodGroup').value
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = '✅ Patient successfully add हो गया!';
+                    e.target.reset();
+                    loadPatients();
+                    setTimeout(() => messageDiv.className = 'message', 3000);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '❌ Error: ' + error.message;
+            }
+        });
+
+        document.getElementById('appointmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageDiv = document.getElementById('appointmentMessage');
+            
+            try {
+                const datetime = new Date(document.getElementById('appointmentDateTime').value);
+                const formatted = datetime.toISOString().slice(0, 19).replace('T', ' ');
+                
+                const response = await fetch(`${API_BASE}/api/appointments`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        patient_id: parseInt(document.getElementById('appointmentPatient').value),
+                        doctor_name: document.getElementById('appointmentDoctor').value,
+                        appointment_datetime: formatted,
+                        reason: document.getElementById('appointmentReason').value
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = '✅ Appointment successfully book हो गई!';
+                    e.target.reset();
+                    loadAppointments();
+                    setTimeout(() => messageDiv.className = 'message', 3000);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '❌ Error: ' + error.message;
+            }
+        });
+
+        document.getElementById('recordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageDiv = document.getElementById('recordMessage');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/records`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        patient_id: parseInt(document.getElementById('recordPatient').value),
+                        diagnosis: document.getElementById('recordDiagnosis').value,
+                        prescription: document.getElementById('recordPrescription').value,
+                        doctor_name: document.getElementById('recordDoctor').value,
+                        record_date: document.getElementById('recordDate').value
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = '✅ Medical record successfully add हो गया!';
+                    e.target.reset();
+                    loadRecords();
+                    setTimeout(() => messageDiv.className = 'message', 3000);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '❌ Error: ' + error.message;
+            }
+        });
+
+        // Initialize
+        checkHealth();
+        loadPatients();
+        setInterval(checkHealth, 30000);
+    </script>
+</body>
+</html>

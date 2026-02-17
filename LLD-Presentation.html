@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Service - Low Level Design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            display: none;
+            background: white;
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .slide.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 20px 0 10px 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.3em;
+            margin-bottom: 40px;
+        }
+
+        .content {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        ul {
+            margin-left: 30px;
+            margin-top: 15px;
+        }
+
+        li {
+            margin: 10px 0;
+            list-style: none;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .tech-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+
+        .diagram {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-item {
+            background: #667eea;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .arrow {
+            color: #667eea;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 20px;
+            border-left: 5px solid #ffc107;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>🏥 Healthcare Management System</h1>
+            <p class="subtitle">Low-Level Design Presentation</p>
+            <div class="content" style="text-align: center; margin-top: 40px;">
+                <h3 style="color: #333; font-size: 2em;">Dockerized Flask Service with DevOps Pipeline</h3>
+
+                <!-- Team Members -->
+                <div
+                    style="margin-top: 40px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 30px; border-radius: 15px; display: inline-block; min-width: 500px;">
+                    <h3 style="color: #667eea; margin-bottom: 20px; font-size: 1.5em;">👥 Team Members</h3>
+                    <div style="text-align: left; font-size: 1.1em; line-height: 2; color: #333;">
+                        <p style="margin: 8px 0;">▸ <strong>Lakshita Singh</strong></p>
+                        <p style="margin: 8px 0;">▸ <strong>Vishakha Hilsayan</strong></p>
+                        <p style="margin: 8px 0;">▸ <strong>Viraj Agrawal</strong></p>
+                        <p style="margin: 8px 0;">▸ <strong>Vishakha Shadija</strong></p>
+                        <p style="margin: 8px 0;">▸ <strong>Vinay Kuthey</strong></p>
+                    </div>
+                </div>
+
+                <div class="tech-stack" style="margin-top: 40px;">
+                    <div class="tech-badge">Python Flask</div>
+                    <div class="tech-badge">React + Tailwind</div>
+                    <div class="tech-badge">Docker</div>
+                    <div class="tech-badge">PostgreSQL</div>
+                    <div class="tech-badge">Kubernetes</div>
+                    <div class="tech-badge">CI/CD</div>
+                </div>
+            </div>
+            <div class="slide-number">1 / 10</div>
+        </div>
+
+        <!-- Slide 2: System Architecture -->
+        <div class="slide">
+            <h2>🏗️ System Architecture</h2>
+            <div class="diagram">
+                <div class="flow">
+                    <div class="flow-item">React Frontend<br><small>Port 5173</small></div>
+                    <div class="arrow">→</div>
+                    <div class="flow-item">Flask API<br><small>Port 5000</small></div>
+                    <div class="arrow">→</div>
+                    <div class="flow-item">PostgreSQL<br><small>Port 5432</small></div>
+                </div>
+                <div class="flow" style="margin-top: 30px;">
+                    <div class="flow-item" style="background: #28a745;">Docker Compose</div>
+                    <div class="arrow">→</div>
+                    <div class="flow-item" style="background: #28a745;">Kubernetes</div>
+                    <div class="arrow">→</div>
+                    <div class="flow-item" style="background: #28a745;">Production</div>
+                </div>
+            </div>
+            <div class="two-column" style="margin-top: 30px;">
+                <div class="box">
+                    <h3>Frontend Layer</h3>
+                    <ul>
+                        <li>React 18 with Hooks</li>
+                        <li>Tailwind CSS styling</li>
+                        <li>Axios for API calls</li>
+                        <li>Responsive design</li>
+                    </ul>
+                </div>
+                <div class="box">
+                    <h3>Backend Layer</h3>
+                    <ul>
+                        <li>Flask REST API</li>
+                        <li>SQLAlchemy ORM</li>
+                        <li>Gunicorn WSGI server</li>
+                        <li>CORS enabled</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-number">2 / 10</div>
+        </div>
+
+        <!-- Slide 3: Database Design -->
+        <div class="slide">
+            <h2>🗄️ Database Design</h2>
+            <div class="content">
+                <h3>Tables & Relationships</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Table</th>
+                            <th>Key Fields</th>
+                            <th>Relationships</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>patient</code></td>
+                            <td>id, name, email, dob, blood_group</td>
+                            <td>1 → Many (appointments, records)</td>
+                        </tr>
+                        <tr>
+                            <td><code>appointment</code></td>
+                            <td>id, patient_id, doctor_name, datetime</td>
+                            <td>Many → 1 (patient)</td>
+                        </tr>
+                        <tr>
+                            <td><code>medical_record</code></td>
+                            <td>id, patient_id, diagnosis, prescription</td>
+                            <td>Many → 1 (patient)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="highlight">
+                    <strong>🔑 Key Design Decisions:</strong>
+                    <ul>
+                        <li>Unique constraint on patient email</li>
+                        <li>Cascade delete for patient relationships</li>
+                        <li>Indexed foreign keys for performance</li>
+                        <li>Timestamps (created_at, updated_at) on all tables</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-number">3 / 10</div>
+        </div>
+
+        <!-- Slide 4: API Design -->
+        <div class="slide">
+            <h2>🔌 REST API Endpoints</h2>
+            <div class="content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>GET</code></td>
+                            <td>/health</td>
+                            <td>Health check</td>
+                        </tr>
+                        <tr>
+                            <td><code>GET</code></td>
+                            <td>/ready</td>
+                            <td>Readiness check (DB connection)</td>
+                        </tr>
+                        <tr>
+                            <td><code>GET</code></td>
+                            <td>/api/patients</td>
+                            <td>List all patients</td>
+                        </tr>
+                        <tr>
+                            <td><code>POST</code></td>
+                            <td>/api/patients</td>
+                            <td>Create patient</td>
+                        </tr>
+                        <tr>
+                            <td><code>PUT</code></td>
+                            <td>/api/patients/:id</td>
+                            <td>Update patient</td>
+                        </tr>
+                        <tr>
+                            <td><code>POST</code></td>
+                            <td>/api/appointments</td>
+                            <td>Book appointment</td>
+                        </tr>
+                        <tr>
+                            <td><code>POST</code></td>
+                            <td>/api/records</td>
+                            <td>Add medical record</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="box" style="margin-top: 20px;">
+                    <strong>Response Format:</strong> JSON with <code>success</code>, <code>data</code>,
+                    <code>message</code>
+                    <br><strong>Error Handling:</strong> Proper HTTP status codes (200, 201, 400, 404, 500)
+                </div>
+            </div>
+            <div class="slide-number">4 / 10</div>
+        </div>
+
+        <!-- Slide 5: Docker Architecture -->
+        <div class="slide">
+            <h2>🐳 Docker Multi-Stage Build</h2>
+            <div class="content">
+                <div class="diagram">
+                    <h3>Build Strategy</h3>
+                    <div class="flow">
+                        <div class="flow-item" style="background: #17a2b8;">Stage 1: Builder<br><small>Install
+                                dependencies</small></div>
+                        <div class="arrow">→</div>
+                        <div class="flow-item" style="background: #28a745;">Stage 2: Runtime<br><small>Copy only
+                                essentials</small></div>
+                    </div>
+                </div>
+                <div class="two-column">
+                    <div class="box">
+                        <h3>Builder Stage</h3>
+                        <ul>
+                            <li>Base: python:3.11-slim</li>
+                            <li>Install gcc, build tools</li>
+                            <li>Create virtual environment</li>
+                            <li>Install Python packages</li>
+                        </ul>
+                    </div>
+                    <div class="box">
+                        <h3>Runtime Stage</h3>
+                        <ul>
+                            <li>Copy only venv from builder</li>
+                            <li>Non-root user (appuser)</li>
+                            <li>No build tools</li>
+                            <li>Final size: ~180MB</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight" style="margin-top: 20px;">
+                    <strong>🔒 Security Features:</strong>
+                    <ul>
+                        <li>Non-root user execution (UID 1000)</li>
+                        <li>Minimal attack surface</li>
+                        <li>Health check integrated</li>
+                        <li>Environment-based configuration</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-number">5 / 10</div>
+        </div>
+
+        <!-- Slide 6: Docker Compose -->
+        <div class="slide">
+            <h2>🎼 Docker Compose Orchestration</h2>
+            <div class="content">
+                <div class="two-column">
+                    <div class="box">
+                        <h3>App Service</h3>
+                        <ul>
+                            <li>Port: 5000</li>
+                            <li>Depends on DB</li>
+                            <li>Health checks enabled</li>
+                            <li>Auto-restart policy</li>
+                        </ul>
+                    </div>
+                    <div class="box">
+                        <h3>DB Service</h3>
+                        <ul>
+                            <li>PostgreSQL 15-alpine</li>
+                            <li>Port: 5432</li>
+                            <li>Persistent volume</li>
+                            <li>Environment variables</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="diagram" style="margin-top: 30px;">
+                    <h3>Network Architecture</h3>
+                    <div class="flow">
+                        <div class="flow-item">Client</div>
+                        <div class="arrow">→</div>
+                        <div class="flow-item">App Container<br><small>healthcare-app</small></div>
+                        <div class="arrow">→</div>
+                        <div class="flow-item">DB Container<br><small>healthcare-db</small></div>
+                    </div>
+                    <p style="margin-top: 20px; color: #666;">
+                        <strong>Network:</strong> <code>healthcare-network</code> (bridge) |
+                        <strong>Volume:</strong> <code>postgres_data</code> (persistent)
+                    </p>
+                </div>
+            </div>
+            <div class="slide-number">6 / 10</div>
+        </div>
+
+        <!-- Slide 7: CI/CD Pipeline -->
+        <div class="slide">
+            <h2>🚀 CI/CD Pipeline</h2>
+            <div class="content">
+                <div class="diagram">
+                    <h3>GitHub Actions Workflow</h3>
+                    <div class="flow">
+                        <div class="flow-item" style="background: #6c757d;">Code Push</div>
+                        <div class="arrow">→</div>
+                        <div class="flow-item" style="background: #17a2b8;">Lint & Test</div>
+                        <div class="arrow">→</div>
+                        <div class="flow-item" style="background: #ffc107;">Build Docker</div>
+                        <div class="arrow">→</div>
+                        <div class="flow-item" style="background: #dc3545;">Security Scan</div>
+                        <div class="arrow">→</div>
+                        <div class="flow-item" style="background: #28a745;">Deploy</div>
+                    </div>
+                </div>
+                <div class="two-column" style="margin-top: 30px;">
+                    <div class="box">
+                        <h3>Automated Testing</h3>
+                        <ul>
+                            <li>Flake8 linting</li>
+                            <li>Pytest unit tests</li>
+                            <li>Coverage reporting</li>
+                            <li>Codecov integration</li>
+                        </ul>
+                    </div>
+                    <div class="box">
+                        <h3>Security Scanning</h3>
+                        <ul>
+                            <li>Trivy vulnerability scan</li>
+                            <li>Safety dependency check</li>
+                            <li>SARIF upload to GitHub</li>
+                            <li>Multi-platform builds</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight" style="margin-top: 20px;">
+                    <strong>📦 Artifact:</strong> Docker image pushed to GitHub Container Registry with semantic
+                    versioning
+                </div>
+            </div>
+            <div class="slide-number">7 / 10</div>
+        </div>
+
+        <!-- Slide 8: Kubernetes -->
+        <div class="slide">
+            <h2>☸️ Kubernetes Deployment</h2>
+            <div class="content">
+                <div class="two-column">
+                    <div class="box">
+                        <h3>Infrastructure</h3>
+                        <ul>
+                            <li>Namespace: healthcare-service</li>
+                            <li>ConfigMap for settings</li>
+                            <li>Secrets for credentials</li>
+                            <li>PVC: 10Gi for database</li>
+                        </ul>
+                    </div>
+                    <div class="box">
+                        <h3>Application</h3>
+                        <ul>
+                            <li>Replicas: 3 (HA)</li>
+                            <li>Rolling updates</li>
+                            <li>Resource limits set</li>
+                            <li>Health probes configured</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="diagram" style="margin-top: 30px;">
+                    <h3>Traffic Flow</h3>
+                    <div class="flow">
+                        <div class="flow-item" style="background: #6610f2;">Internet</div>
+                        <div class="arrow">→</div>
+                        <div class="flow-item" style="background: #6610f2;">Ingress<br><small>TLS + Rate Limit</small>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="flow-item" style="background: #fd7e14;">Service<br><small>ClusterIP</small></div>
+                        <div class="arrow">→</div>
+                        <div class="flow-item" style="background: #20c997;">Pods (x3)</div>
+                    </div>
+                </div>
+                <p style="margin-top: 30px; text-align: center; color: #666;">
+                    <strong>Ingress Features:</strong> SSL redirect, CORS, Rate limiting (100 RPS), Cert-manager
+                    integration
+                </p>
+            </div>
+            <div class="slide-number">8 / 10</div>
+        </div>
+
+        <!-- Slide 9: Code Flow -->
+        <div class="slide">
+            <h2>🔄 Request Flow Example</h2>
+            <div class="content">
+                <h3>Creating a New Patient</h3>
+                <div class="diagram">
+                    <div class="flow" style="flex-direction: column; align-items: flex-start; gap: 15px;">
+                        <div style="display: flex; align-items: center; gap: 20px; width: 100%;">
+                            <div class="flow-item" style="min-width: 200px;">1. User fills form</div>
+                            <div class="arrow">→</div>
+                            <div style="flex: 1; color: #666;">React frontend validates input</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 20px; width: 100%;">
+                            <div class="flow-item" style="min-width: 200px;">2. API call</div>
+                            <div class="arrow">→</div>
+                            <div style="flex: 1; color: #666;">POST /api/patients with JSON data</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 20px; width: 100%;">
+                            <div class="flow-item" style="min-width: 200px;">3. Backend validates</div>
+                            <div class="arrow">→</div>
+                            <div style="flex: 1; color: #666;">Check required fields, email format</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 20px; width: 100%;">
+                            <div class="flow-item" style="min-width: 200px;">4. Create model</div>
+                            <div class="arrow">→</div>
+                            <div style="flex: 1; color: #666;">SQLAlchemy Patient object</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 20px; width: 100%;">
+                            <div class="flow-item" style="min-width: 200px;">5. Save to DB</div>
+                            <div class="arrow">→</div>
+                            <div style="flex: 1; color: #666;">PostgreSQL transaction with rollback</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 20px; width: 100%;">
+                            <div class="flow-item" style="min-width: 200px;">6. Return response</div>
+                            <div class="arrow">→</div>
+                            <div style="flex: 1; color: #666;">JSON with patient data + success message</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 20px; width: 100%;">
+                            <div class="flow-item" style="min-width: 200px;">7. Update UI</div>
+                            <div class="arrow">→</div>
+                            <div style="flex: 1; color: #666;">React state refresh, show in list</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">9 / 10</div>
+        </div>
+
+        <!-- Slide 10: Summary -->
+        <div class="slide">
+            <h2>✅ Key Takeaways</h2>
+            <div class="content">
+                <div class="two-column">
+                    <div class="box">
+                        <h3>Technical Highlights</h3>
+                        <ul>
+                            <li>Microservices architecture</li>
+                            <li>RESTful API design</li>
+                            <li>Relational database (PostgreSQL)</li>
+                            <li>Multi-stage Docker builds</li>
+                            <li>Container orchestration</li>
+                        </ul>
+                    </div>
+                    <div class="box">
+                        <h3>DevOps Best Practices</h3>
+                        <ul>
+                            <li>Automated CI/CD pipelines</li>
+                            <li>Security scanning (Trivy)</li>
+                            <li>Infrastructure as Code (K8s)</li>
+                            <li>Environment-based config</li>
+                            <li>Health monitoring</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight" style="margin-top: 40px; text-align: center;">
+                    <h3 style="color: #333; margin-bottom: 20px;">Production-Ready Features</h3>
+                    <div class="tech-stack">
+                        <div class="tech-badge" style="background: #28a745;">✓ Scalable (3 replicas)</div>
+                        <div class="tech-badge" style="background: #28a745;">✓ Secure (non-root, TLS)</div>
+                        <div class="tech-badge" style="background: #28a745;">✓ Tested (Unit + Integration)</div>
+                        <div class="tech-badge" style="background: #28a745;">✓ 27 Files Created</div>
+                        <div class="tech-badge" style="background: #28a745;">✓ Full Documentation</div>
+                    </div>
+                </div>
+                <h2 style="text-align: center; margin-top: 50px; color: #667eea;">Questions? 🤔</h2>
+            </div>
+            <div class="slide-number">10 / 10</div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            currentSlide = n;
+            slides[currentSlide].classList.add('active');
+
+            // Update navigation buttons
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+        }
+
+        function changeSlide(direction) {
+            let newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < slides.length) {
+                showSlide(newSlide);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+
+</html>
