@@ -354,7 +354,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Viraj Agrawal - virajagrawal23@gmail.com
 - Vishakha Shadija - vishakhashadija225@gmail.com
 - Vishakha Hilsayan - hilsayanvishakha@gmail.com
-- Lakshita Singh - vinaykuthey@gmail.com
+- Lakshita Singh - lakshitasingh142@gmail.com
 
 ## 🙏 Acknowledgments
 
