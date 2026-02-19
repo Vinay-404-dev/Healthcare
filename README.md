@@ -350,7 +350,11 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👥 Authors
 
-- Your Name - [your-email@example.com](mailto:your-email@example.com)
+- Vinay Kuthey - vinaykuthey@gmail.com
+- Viraj Agrawal - virajagrawal23@gmail.com
+- Vishakha Shadija - vishakhashadija225@gmail.com
+- Vishakha Hilsayan - hilsayanvishakha@gmail.com
+- Lakshita Singh - vinaykuthey@gmail.com
 
 ## 🙏 Acknowledgments
 
