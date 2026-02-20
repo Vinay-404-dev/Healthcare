@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Activity, Users, Calendar, FileText, Plus, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Activity, Users, Calendar, FileText, Plus, Loader2, Trash2 } from 'lucide-react';
 import { healthAPI, patientsAPI, appointmentsAPI, recordsAPI } from './services/api';
 import './App.css';
 
@@ -158,6 +158,42 @@ function App() {
     }
   };
 
+  const handleDeletePatient = async (id, name) => {
+    if (window.confirm(`Are you sure you want to delete patient "${name}"? This will also delete all their appointments and records.`)) {
+      try {
+        await patientsAPI.delete(id);
+        showMessage('success', '✅ Patient deleted successfully!');
+        loadPatients();
+      } catch (error) {
+        showMessage('error', '❌ Error: ' + (error.response?.data?.error || error.message));
+      }
+    }
+  };
+
+  const handleDeleteAppointment = async (id) => {
+    if (window.confirm(`Are you sure you want to delete Appointment #${id}?`)) {
+      try {
+        await appointmentsAPI.delete(id);
+        showMessage('success', '✅ Appointment deleted successfully!');
+        loadAppointments();
+      } catch (error) {
+        showMessage('error', '❌ Error: ' + (error.response?.data?.error || error.message));
+      }
+    }
+  };
+
+  const handleDeleteRecord = async (id) => {
+    if (window.confirm(`Are you sure you want to delete Medical Record #${id}?`)) {
+      try {
+        await recordsAPI.delete(id);
+        showMessage('success', '✅ Medical record deleted successfully!');
+        loadRecords();
+      } catch (error) {
+        showMessage('error', '❌ Error: ' + (error.response?.data?.error || error.message));
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-4">
       <div className="max-w-7xl mx-auto">
@@ -167,7 +203,7 @@ function App() {
             🏥 Healthcare Management System
           </h1>
           <p className="text-gray-600 text-center text-lg">
-            आसानी से Patients, Appointments और Medical Records manage करें
+            Easily manage Patients, Appointments and Medical Records
           </p>
         </div>
 
@@ -199,8 +235,8 @@ function App() {
           <button
             onClick={() => setActiveTab('patients')}
             className={`flex-1 min-w-[200px] flex items-center justify-center gap-2 p-4 rounded-xl font-semibold text-lg transition-all ${activeTab === 'patients'
-                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105'
-                : 'bg-white text-indigo-600 hover:bg-indigo-50'
+              ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105'
+              : 'bg-white text-indigo-600 hover:bg-indigo-50'
               }`}
           >
             <Users className="w-5 h-5" />
@@ -209,8 +245,8 @@ function App() {
           <button
             onClick={() => setActiveTab('appointments')}
             className={`flex-1 min-w-[200px] flex items-center justify-center gap-2 p-4 rounded-xl font-semibold text-lg transition-all ${activeTab === 'appointments'
-                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105'
-                : 'bg-white text-indigo-600 hover:bg-indigo-50'
+              ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105'
+              : 'bg-white text-indigo-600 hover:bg-indigo-50'
               }`}
           >
             <Calendar className="w-5 h-5" />
@@ -219,8 +255,8 @@ function App() {
           <button
             onClick={() => setActiveTab('records')}
             className={`flex-1 min-w-[200px] flex items-center justify-center gap-2 p-4 rounded-xl font-semibold text-lg transition-all ${activeTab === 'records'
-                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105'
-                : 'bg-white text-indigo-600 hover:bg-indigo-50'
+              ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105'
+              : 'bg-white text-indigo-600 hover:bg-indigo-50'
               }`}
           >
             <FileText className="w-5 h-5" />
@@ -241,23 +277,23 @@ function App() {
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
               <Plus className="w-6 h-6" />
-              नया Patient Add करें
+              Add New Patient
             </h2>
             <form onSubmit={handlePatientSubmit} className="space-y-4 mb-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">नाम (Name) *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
                   <input
                     type="text"
                     required
                     value={patientForm.name}
                     onChange={(e) => setPatientForm({ ...patientForm, name: e.target.value })}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition"
-                    placeholder="मरीज का नाम"
+                    placeholder="Patient's full name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">जन्म तिथि *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Date of Birth *</label>
                   <input
                     type="date"
                     required
@@ -278,7 +314,7 @@ function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">फोन नंबर</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
                   <input
                     type="tel"
                     value={patientForm.phone}
@@ -306,13 +342,13 @@ function App() {
                   </select>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">पता</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Address</label>
                   <textarea
                     value={patientForm.address}
                     onChange={(e) => setPatientForm({ ...patientForm, address: e.target.value })}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition"
                     rows="3"
-                    placeholder="पूरा पता"
+                    placeholder="Full address"
                   />
                 </div>
               </div>
@@ -320,12 +356,12 @@ function App() {
                 type="submit"
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-4 px-6 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
               >
-                Patient Add करें
+                Add Patient
               </button>
             </form>
 
             {/* Patients List */}
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">📋 सभी Patients</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">📋 All Patients</h2>
             {loading ? (
               <div className="flex justify-center items-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -333,16 +369,25 @@ function App() {
             ) : patients.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <Users className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                <p>अभी तक कोई patient नहीं है। ऊपर form से पहला patient add करें!</p>
+                <p>No patients yet. Add your first patient using the form above!</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {patients.map(patient => (
                   <div key={patient.id} className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl shadow-md hover:shadow-lg transition-all">
-                    <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-                      <Users className="w-5 h-5" />
-                      {patient.name}
-                    </h3>
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <Users className="w-5 h-5" />
+                        {patient.name}
+                      </h3>
+                      <button
+                        onClick={() => handleDeletePatient(patient.id, patient.name)}
+                        className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all"
+                        title="Delete Patient"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
@@ -373,12 +418,12 @@ function App() {
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
               <Calendar className="w-6 h-6" />
-              नई Appointment Book करें
+              Book New Appointment
             </h2>
             <form onSubmit={handleAppointmentSubmit} className="space-y-4 mb-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Patient चुनें *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Select Patient *</label>
                   <select
                     required
                     value={appointmentForm.patient_id}
@@ -392,7 +437,7 @@ function App() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Doctor का नाम *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Doctor's Name *</label>
                   <input
                     type="text"
                     required
@@ -426,12 +471,12 @@ function App() {
                 type="submit"
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-4 px-6 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
               >
-                Appointment Book करें
+                Book Appointment
               </button>
             </form>
 
             {/* Appointments List */}
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">📅 सभी Appointments</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">📅 All Appointments</h2>
             {loading ? (
               <div className="flex justify-center items-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -439,16 +484,25 @@ function App() {
             ) : appointments.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <Calendar className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                <p>कोई appointment नहीं है। ऊपर form से appointment book करें!</p>
+                <p>No appointments yet. Book an appointment using the form above!</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {appointments.map(apt => (
                   <div key={apt.id} className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl shadow-md">
-                    <h3 className="text-xl font-bold text-gray-800 mb-3">📅 Appointment #{apt.id}</h3>
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-xl font-bold text-gray-800">📅 Appointment #{apt.id}</h3>
+                      <button
+                        onClick={() => handleDeleteAppointment(apt.id)}
+                        className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all"
+                        title="Delete Appointment"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-600">
                       <div>👨‍⚕️ {apt.doctor_name}</div>
-                      <div>🕐 {new Date(apt.appointment_datetime).toLocaleString('hi-IN')}</div>
+                      <div>🕐 {new Date(apt.appointment_datetime).toLocaleString('en-IN')}</div>
                       <div>📊 Status: {apt.status}</div>
                       {apt.reason && <div className="md:col-span-2">📝 {apt.reason}</div>}
                     </div>
@@ -464,12 +518,12 @@ function App() {
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
               <FileText className="w-6 h-6" />
-              नया Medical Record Add करें
+              Add New Medical Record
             </h2>
             <form onSubmit={handleRecordSubmit} className="space-y-4 mb-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Patient चुनें *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Select Patient *</label>
                   <select
                     required
                     value={recordForm.patient_id}
@@ -483,7 +537,7 @@ function App() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Doctor का नाम *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Doctor's Name *</label>
                   <input
                     type="text"
                     required
@@ -526,12 +580,12 @@ function App() {
                 type="submit"
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-4 px-6 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
               >
-                Record Add करें
+                Add Record
               </button>
             </form>
 
             {/* Records List */}
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">📋 सभी Medical Records</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">📋 All Medical Records</h2>
             {loading ? (
               <div className="flex justify-center items-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -539,13 +593,22 @@ function App() {
             ) : records.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <FileText className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                <p>कोई medical record नहीं है। ऊपर form से record add करें!</p>
+                <p>No medical records yet. Add a record using the form above!</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {records.map(record => (
                   <div key={record.id} className="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-xl shadow-md">
-                    <h3 className="text-xl font-bold text-gray-800 mb-3">📋 {record.patientName} - Medical Record</h3>
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-xl font-bold text-gray-800">📋 {record.patientName} - Medical Record</h3>
+                      <button
+                        onClick={() => handleDeleteRecord(record.id)}
+                        className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all"
+                        title="Delete Record"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                     <div className="space-y-2 text-sm text-gray-700">
                       <div>👨‍⚕️ <strong>Doctor:</strong> {record.doctor_name}</div>
                       <div>📅 <strong>Date:</strong> {record.record_date}</div>

@@ -26,11 +26,13 @@ export const appointmentsAPI = {
     getAll: () => api.get('/api/appointments'),
     create: (data) => api.post('/api/appointments', data),
     update: (id, data) => api.put(`/api/appointments/${id}`, data),
+    delete: (id) => api.delete(`/api/appointments/${id}`),
 };
 
 export const recordsAPI = {
     getByPatient: (patientId) => api.get(`/api/patients/${patientId}/records`),
     create: (data) => api.post('/api/records', data),
+    delete: (id) => api.delete(`/api/records/${id}`),
 };
 
 export default api;
