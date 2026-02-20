@@ -2,9 +2,6 @@
 
 A production-ready Healthcare service built with Python Flask, containerized using Docker best practices, with complete DevOps tooling including CI/CD pipelines and Kubernetes orchestration.
 
-[![CI/CD Pipeline](https://github.com/your-org/healthcare-service/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/your-org/healthcare-service/actions)
-[![Docker Image](https://img.shields.io/docker/v/your-org/healthcare-service?label=docker)](https://hub.docker.com/r/your-org/healthcare-service)
-
 ## Architecture
 
 ```
