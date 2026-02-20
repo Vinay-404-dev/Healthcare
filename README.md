@@ -5,7 +5,7 @@ A production-ready Healthcare service built with Python Flask, containerized usi
 [![CI/CD Pipeline](https://github.com/your-org/healthcare-service/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/your-org/healthcare-service/actions)
 [![Docker Image](https://img.shields.io/docker/v/your-org/healthcare-service?label=docker)](https://hub.docker.com/r/your-org/healthcare-service)
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -29,7 +29,7 @@ A production-ready Healthcare service built with Python Flask, containerized usi
 └─────────────────────────────────────────────┘
 ```
 
-## ✨ Features
+## Features
 
 - **RESTful API** for healthcare management (patients, appointments, medical records)
 - **Multi-stage Docker** build for optimized image size (<200MB)
@@ -41,7 +41,7 @@ A production-ready Healthcare service built with Python Flask, containerized usi
 - **Health checks** for container orchestration
 - **Database migrations** with Flask-Migrate
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -113,7 +113,7 @@ A production-ready Healthcare service built with Python Flask, containerized usi
    python app.py
    ```
 
-## 📋 API Endpoints
+## API Endpoints
 
 ### Health Checks
 - `GET /health` - Basic health check
@@ -137,7 +137,7 @@ A production-ready Healthcare service built with Python Flask, containerized usi
 
 For detailed API documentation, see [API.md](API.md).
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Install test dependencies
@@ -153,7 +153,7 @@ pytest --cov=. --cov-report=html
 pytest tests/test_app.py -v
 ```
 
-## 🐳 Docker
+## Docker
 
 ### Build Docker Image
 
@@ -178,7 +178,7 @@ docker buildx build \
   -t healthcare-service:latest .
 ```
 
-## ☸️ Kubernetes Deployment
+## Kubernetes Deployment
 
 ### Deploy to Kubernetes
 
@@ -216,7 +216,7 @@ kubectl set image deployment/healthcare-service \
 
 For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
-## 🔄 CI/CD
+## CI/CD
 
 ### GitHub Actions
 
@@ -234,7 +234,7 @@ A Jenkinsfile is provided for Jenkins-based CI/CD with:
 - Kubernetes deployment
 - Email notifications
 
-## 🛠️ Makefile Commands
+## Makefile Commands
 
 ```bash
 # Build Docker image
@@ -256,7 +256,7 @@ make deploy-k8s
 make logs
 ```
 
-## 📊 Project Structure
+## Project Structure
 
 ```
 healthcare-service/
@@ -284,7 +284,7 @@ healthcare-service/
     └── test_models.py
 ```
 
-## 🔒 Security Considerations
+## Security Considerations
 
 - **Non-root user**: Application runs as non-root user (appuser) in Docker
 - **Minimal base image**: Uses python:3.11-slim for reduced attack surface
@@ -294,7 +294,7 @@ healthcare-service/
 - **Resource limits**: CPU and memory limits defined in K8s manifests
 - **TLS termination**: Configured in Ingress with cert-manager support
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Application won't start
 ```bash
@@ -327,7 +327,7 @@ kubectl get events -n healthcare-service --sort-by='.lastTimestamp'
 kubectl logs <pod-name> -n healthcare-service
 ```
 
-## 📝 Environment Variables
+## Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
@@ -336,7 +336,7 @@ kubectl logs <pod-name> -n healthcare-service
 | `DATABASE_URL` | PostgreSQL connection URL | postgresql://healthuser:healthpass@db:5432/healthdb |
 | `LOG_LEVEL` | Logging level | INFO |
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -344,11 +344,11 @@ kubectl logs <pod-name> -n healthcare-service
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 👥 Authors
+## Authors
 
 - Vinay Kuthey - vinaykuthey@gmail.com
 - Viraj Agrawal - virajagrawal23@gmail.com
@@ -356,7 +356,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Vishakha Hilsayan - hilsayanvishakha@gmail.com
 - Lakshita Singh - lakshitasingh142@gmail.com
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Flask framework and community
 - Docker and Kubernetes documentation
